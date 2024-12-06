@@ -31,12 +31,15 @@
 
 using namespace events;
 using namespace dust_reading;
+namespace {
+#define WAIT 1s
+}
 
 // Max payload size can be LORAMAC_PHY_MAXPAYLOAD.
 // This example only communicates with much shorter messages (<30 bytes).
 // If longer messages are used, these buffers must be changed accordingly.
-uint8_t tx_buffer[30];
-uint8_t rx_buffer[30];
+uint8_t tx_buffer[1000];
+uint8_t rx_buffer[1000];
 
 /*
  * Sets up an application dependent transmission timer in ms. Used only when Duty Cycling is off for testing
@@ -55,20 +58,20 @@ uint8_t rx_buffer[30];
  */
 #define CONFIRMED_MSG_RETRY_COUNTER     3
 
-
+    // Création d'une instance du capteur
+DustSensor sensor(P1_UART_TX, P1_UART_RX);
 
 /**
  * Dummy sensor class object
  */
 // char *payload = "{\"temperature\": 32.5}";
-char *payload = {};
+char payload[1000] = {};
 
+// Variables pour stocker les mesures
+uint16_t pm1_0, pm2_5, pm4_0, pm10;
 
-bool dust_payload(char *payload)
+bool dust_payload()
 {
-        // Création d'une instance du capteur
-    DustSensor sensor(P1_UART_TX, P1_UART_RX);
-
     // Initialisation du capteur
     if (!sensor.initialize()) {
         printf("Failed to initialize sensor.\n");
@@ -77,13 +80,10 @@ bool dust_payload(char *payload)
 
     printf("Sensor initialized and measurement started.\n");
 
-
-    // Variables pour stocker les mesures
-    uint16_t pm1_0, pm2_5, pm4_0, pm10;
-
     // Lecture des données
     if (sensor.read(pm1_0, pm2_5, pm4_0, pm10)) {
         sprintf(payload, "{\"pm1_0\": %d, \"pm2_5\": %d, \"pm4_0\": %d, \"pm10\": %d}", pm1_0, pm2_5, pm4_0, pm10);
+        printf("payload = %s\n", payload);
         return 1;
         // printf("PM1.0: %d ug/m3\nPM4.0: %d ug/m3\n", pm1_0, pm4_0);
         // printf("PM10: %d ug/m3\nPM2.5: %d ug/m3\n\n", pm10, pm2_5);
@@ -126,6 +126,12 @@ static lorawan_app_callbacks_t callbacks;
  */
 int main(void)
 {
+    // while(1)
+    // {
+    //     dust_payload();
+    //     printf("%s", payload);
+    //     ThisThread::sleep_for(WAIT);
+    // }
 
     // stores the status of a call to LoRaWAN protocol
     lorawan_status_t retcode;
@@ -187,7 +193,7 @@ static void send_message()
     int32_t sensor_value;
 
     // TODO: Read sensor data
-    dust_payload(payload);
+    dust_payload();
     memcpy(tx_buffer, payload, strlen(payload));
     packet_len = strlen(payload);
 
