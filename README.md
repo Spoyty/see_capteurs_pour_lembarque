@@ -1,3 +1,20 @@
+## Note pour le readme final
+# Librairies
+Les fichiers .lib contiennent les git des librairies utilisées : hpma115 & mbed-os
+La commande 'mbed deploy' permet de les cloner dans le dépôt.
+# Wrapper
+Nous avons utilisés la librairie du catie hpma115 pour le capteur dust. POur simplifier son utilisation, nous avons créer un wrapper de cette lib "dust_reading_lic".
+# Attention 
+Manque un .lib apparement. J'ai rien compris. 
+
+
+
+
+
+
+
+
+
 ![](./resources/official_armmbed_example_badge.png)
 # Blinky Mbed OS example
 

@@ -126,6 +126,7 @@ static lorawan_app_callbacks_t callbacks;
  */
 int main(void)
 {
+    // Test de lecture de la payload
     // while(1)
     // {
     //     dust_payload();
